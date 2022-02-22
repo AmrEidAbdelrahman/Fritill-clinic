@@ -18,6 +18,7 @@ class AppointmentView(ModelViewSet):
     """
     
     serializer_class = AppointmentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         filter =  self.kwargs.get('filter')
