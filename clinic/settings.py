@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'crispy_forms',
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -38,6 +40,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
