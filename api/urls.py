@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import Home, AppointmentView, RescheduleRequestView
 
-
 urlpatterns = [
 		path('', Home.as_view(), name='home-page'),
 
