@@ -1,2 +1,12 @@
-dsadsa
-<a href="http://127.0.0.1:8000/api/appointments/">appointment</a>
+{% extends 'api/base.html' %}
+
+{% block content %}
+	
+	dsadsadasdasd
+	<a href="http://127.0.0.1:8000/api/appointments/">appointment</a>
+
+	{% for appointment in response %}
+	{{ appointment }}
+	{% endfor %}
+
+{% endblock %}

@@ -11,6 +11,9 @@ from .models import Appointment, RescheduleRequest
 
 from datetime import datetime
 
+def Home(request):
+
+    return render(request, 'api/home.html')
 
 class AppointmentView(ModelViewSet):
     """
@@ -30,6 +33,23 @@ class AppointmentView(ModelViewSet):
             return Appointment.objects.all().filter(approved=False, cancel=False, date__gt=datetime.now()).order_by('date')
         else:
             return Appointment.objects.all().order_by('date')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if self.kwargs.get('api') == True:
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        print(queryset)
+        context = {
+            'response': queryset,
+            'filter': self.kwargs.get('filter')
+        }
+        return render(request, 'api/appointment.html', context)
 
     # for clients and admins
     @action(detail=True, methods=['put'], name="appointment-cancel")
@@ -69,6 +89,7 @@ class RescheduleRequestView(ModelViewSet):
     @action(detail=True, methods=['put'], name="reschedule-approve")
     def approve(self, request, pk=None):
         req = RescheduleRequest.objects.filter(pk=pk).update(approved=True, refused=False)
+        # TODO: change the appointment date
         return Response(status=200)
 
 
@@ -77,7 +98,3 @@ class RescheduleRequestView(ModelViewSet):
         req = RescheduleRequest.objects.filter(pk=pk).update(approved=False, refused=True)
         return Response(status=200)
 
-
-class Home(ListView):
-    model = Appointment
-    

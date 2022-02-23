@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'frontend',
-
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -49,9 +47,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'api.models.CsrfExemptSessionAuthentication',
+        'api.models.BearerAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',

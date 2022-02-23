@@ -1,0 +1,84 @@
+{% extends 'api/base.html' %}
+{% load static %}
+{% block css %}
+<style type="text/css">
+	h1 {
+		margin-bottom: 20px;
+	}
+
+	.card {
+		margin-bottom: 20px;
+	}
+</style>
+{% endblock %}
+{% block content %}
+
+	<div class="container mt-5">
+		<ul class="nav">
+		  <li class="nav-item">
+		    <a class="nav-link active" aria-current="page" href="{% url 'frontend:appointment' %}">All</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="{% url 'frontend:appointment-upcoming' %}">Upcoming</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="{% url 'frontend:appointment-past'%}">past</a>
+		  </li>
+		</ul>
+
+
+		{% if filter == 'upcoming' %}
+		<h1>Upcoming Appointments</h1>
+		{% for appointment in response %}
+
+		<div class="card">
+		  <div class="card-header">
+		    {{appointment.client.username}}
+		  </div>
+		  <div class="card-body">
+		    <h5 class="card-title">Special title treatment</h5>
+		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		  </div>
+		</div>
+
+		{% endfor %}	
+		{% endif %}
+
+		{% if filter == 'past' %}
+		<h1>Past Appointments</h1>
+		{% for appointment in response %}
+
+		<div class="card">
+		  <div class="card-header">
+		    Featured
+		  </div>
+		  <div class="card-body">
+		    <h5 class="card-title">Special title treatment</h5>
+		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		  </div>
+		</div>
+
+		{% endfor %}	
+		{% endif %}
+
+		{% if filter == None %}
+		<h1>Appointments</h1>
+		{% for appointment in response %}
+
+		<div class="card">
+		  <div class="card-header">
+		    Featured
+		  </div>
+		  <div class="card-body">
+		    <h5 class="card-title">Special title treatment</h5>
+		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		  </div>
+		</div>
+
+		{% endfor %}	
+		{% endif %}
+		
+{% endblock %}

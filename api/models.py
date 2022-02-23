@@ -14,6 +14,9 @@ class Appointment(models.Model):
 	missed = models.BooleanField(default=False)
 	cancel = models.BooleanField(default=False)
 
+	def __str__(self):
+		return f'{self.client.username}'
+
 
 class RescheduleRequest(models.Model):
 	appointment = models.ForeignKey("Appointment", on_delete=models.CASCADE)

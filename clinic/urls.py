@@ -6,8 +6,9 @@ from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     
-    path('', include('frontend.urls')),
-    path('api/', include('api.urls')),
+    #path('', include('frontend.urls')),
+    path('', include('api.urls', namespace='frontend')),
+    path('api/', include('api.urls', namespace='api'), {"api":True}),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
 
