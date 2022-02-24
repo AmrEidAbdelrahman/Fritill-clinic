@@ -1,0 +1,45 @@
+{% extends 'api/base.html' %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<h1 class="mt-5 col-9">Reschedule Requests</h1>
+		
+	</div>
+
+	{% for request in response %}
+
+	<div class="card">
+	  <div class="card-header">
+	    Client: {{request.appointment.client.username}}
+	  </div>
+	  <div class="card-body">
+	    <h5 class="card-title">Old Date: {{request.appointment.date}}</h5>
+	    <h5 class="card-title">New Date: {{ request.to}}</h5>
+	    <p class="card-text">Status: 
+	    {% if request.appointment.approved %}
+	    Approved
+	    {% elif request.appointment.cancel %}
+	    cancel
+	    {% elif request.appointment.finished %}
+	    finished
+	    {% elif request.appointment.missed %}
+	    missed
+	    {% else %}
+	    new
+	    {% endif %}
+		</p>
+	    {% if not appointment.cancel and not appointment.approved %}
+	    <a href="#" class="btn btn-primary">approve</a>
+	    <a href="#" class="btn btn-danger">cancel</a>
+	    {% endif %}
+
+	  </div>
+	</div>
+
+	{% endfor %}
+	{% if form %}
+		{{ form }}
+	{% endif %}	
+</div>
+{% endblock %}

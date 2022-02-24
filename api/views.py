@@ -8,12 +8,20 @@ from rest_framework import permissions
 
 from .serializers import AppointmentSerializer, RescheduleRequestSerializer
 from .models import Appointment, RescheduleRequest
+from .forms import ReserveAppointmentForm, RescheduleRequestForm
 
 from datetime import datetime
 
-def Home(request):
 
+def Home(request):
     return render(request, 'api/home.html')
+
+
+def reserve_appointment(request):
+    if request.method == 'GET':
+        form = ReserveAppointmentForm()
+    return render(request, 'api/reserve_appointment.html', {'form': form})
+
 
 class AppointmentView(ModelViewSet):
     """
@@ -21,18 +29,24 @@ class AppointmentView(ModelViewSet):
     """
     
     serializer_class = AppointmentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         filter =  self.kwargs.get('filter')
+        user = self.request.user
+        queryset = Appointment.objects.all()
+        if user.is_staff:
+            print('#$#$#$#$', user)
+            queryset.filter(client=user)
         if filter == "upcoming":
-            return Appointment.objects.all().filter(date__gt=datetime.now()).order_by('date')
+            return queryset.filter(approved=True, date__gt=datetime.now()).order_by('date')
         elif filter == "past":
-            return Appointment.objects.all().filter(date__lt=datetime.now()).order_by('date')
+            return queryset.filter(date__lt=datetime.now()).order_by('date')
         elif filter == "new":
-            return Appointment.objects.all().filter(approved=False, cancel=False, date__gt=datetime.now()).order_by('date')
+            print("#####$$##### ")
+            return queryset.filter(approved=False, cancel=False, date__gt=datetime.now()).order_by('date')
         else:
-            return Appointment.objects.all().order_by('date')
+            return queryset.order_by('date')
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -86,6 +100,23 @@ class RescheduleRequestView(ModelViewSet):
     serializer_class = RescheduleRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if self.kwargs.get('api') == True:
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        print(queryset)
+        context = {
+            'response': queryset,
+            
+        }
+        return render(request, 'api/reschedule_requests.html', context)
+
     @action(detail=True, methods=['put'], name="reschedule-approve")
     def approve(self, request, pk=None):
         req = RescheduleRequest.objects.filter(pk=pk).update(approved=True, refused=False)
@@ -98,3 +129,9 @@ class RescheduleRequestView(ModelViewSet):
         req = RescheduleRequest.objects.filter(pk=pk).update(approved=False, refused=True)
         return Response(status=200)
 
+
+def reschedule_request(request):
+    if request.method == 'GET':
+        form = RescheduleRequestForm()
+
+    return render(request, 'api/reschedule_requests.html', {'form': form})

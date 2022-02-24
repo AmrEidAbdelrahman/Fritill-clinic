@@ -12,8 +12,9 @@
 </style>
 {% endblock %}
 {% block content %}
-
 	<div class="container mt-5">
+		{{ user }}
+	<a href="{% url 'frontend:reserve-appointment-page' %}" class="btn btn-primary float-end mt-5">Reserve Appointment</a>
 		<ul class="nav">
 		  <li class="nav-item">
 		    <a class="nav-link active" aria-current="page" href="{% url 'frontend:appointment' %}">All</a>
@@ -24,6 +25,11 @@
 		  <li class="nav-item">
 		    <a class="nav-link" href="{% url 'frontend:appointment-past'%}">past</a>
 		  </li>
+		  {% if user.is_staff %}
+		  <li class="nav-item">
+		    <a class="nav-link" href="{% url 'frontend:appointment-new'%}">new</a>
+		  </li>
+		  {% endif %}
 		</ul>
 
 
@@ -33,12 +39,32 @@
 
 		<div class="card">
 		  <div class="card-header">
-		    {{appointment.client.username}}
+		    Client: {{appointment.client.username}}
 		  </div>
 		  <div class="card-body">
-		    <h5 class="card-title">Special title treatment</h5>
-		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		    <h5 class="card-title">Date: {{appointment.date}}</h5>
+		    <p class="card-text">Status: 
+		    {% if appointment.approved %}
+		    Approved
+		    {% elif appointment.cancel %}
+		    cancel
+		    {% elif appointment.finished %}
+		    finished
+		    {% elif appointment.missed %}
+		    missed
+		    {% else %}
+		    new
+		    {% endif %}
+			</p>
+		    {% if user.is_staff and not appointment.approved and not appointment.cancel %}
+		    <a href="#" class="btn btn-primary">Approve</a>
+		    <a href="#" class="btn btn-danger">Cancel</a>
+		    {% elif not appointment.cancel %}
+		    <a href="#" class="btn btn-danger">Cancel</a>
+		    {% endif %}
+		    {% if not user.is_staff %}
+		    <a href="{% url 'frontend:reserve-appointment-page' appointment.id%}" class="btn btn-danger">Reschedule</a>
+		    {% endif %}
 		  </div>
 		</div>
 
@@ -51,12 +77,27 @@
 
 		<div class="card">
 		  <div class="card-header">
-		    Featured
+		    Client: {{appointment.client.username}}
 		  </div>
 		  <div class="card-body">
-		    <h5 class="card-title">Special title treatment</h5>
-		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		    <h5 class="card-title">Date: {{appointment.date}}</h5>
+		    <p class="card-text">Status: 
+		    {% if appointment.finished %}
+		    Finished
+		    {% elif appointment.missed %}
+		    missed
+		    {% elif appointment.approved %}
+		    approved
+		    {% elif appointment.cancel %}
+		    cancel
+		    {% else %}
+		    new
+		    {% endif %}
+			</p>
+			{% if not appointment.finished and not appointment.missed %}
+		    <a href="#" class="btn btn-primary">Missed</a>
+		    <a href="#" class="btn btn-primary">Finished</a>
+		    {% endif %}
 		  </div>
 		</div>
 
@@ -69,12 +110,58 @@
 
 		<div class="card">
 		  <div class="card-header">
+		    Client: {{appointment.client.username}}
+		  </div>
+		  <div class="card-body">
+		    <h5 class="card-title">Date: {{appointment.date}}</h5>
+		    <p class="card-text">Status: 
+		    {% if appointment.approved %}
+		    Approved
+		    {% elif appointment.cancel %}
+		    cancel
+		    {% elif appointment.finished %}
+		    finished
+		    {% elif appointment.missed %}
+		    missed
+		    {% else %}
+		    new
+		    {% endif %}
+			</p>
+		    <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+		  </div>
+		</div>
+
+		{% endfor %}	
+		{% endif %}
+
+		{% if filter == 'new' and user.is_staff %}
+		<h1>New Appointments</h1>
+		{% for appointment in response %}
+
+		<div class="card">
+		  <div class="card-header">
 		    Featured
 		  </div>
 		  <div class="card-body">
 		    <h5 class="card-title">Special title treatment</h5>
-		    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-		    <a href="#" class="btn btn-primary">Go somewhere</a>
+		    <p class="card-text">Status: 
+		    {% if appointment.approved %}
+		    Approved
+		    {% elif appointment.cancel %}
+		    cancel
+		    {% elif appointment.finished %}
+		    finished
+		    {% elif appointment.missed %}
+		    missed
+		    {% else %}
+		    new
+		    {% endif %}
+			</p>
+		    {% if not appointment.cancel and not appointment.approved %}
+		    <a href="#" class="btn btn-primary">approve</a>
+		    <a href="#" class="btn btn-danger">cancel</a>
+		    {% endif %}
+
 		  </div>
 		</div>
 

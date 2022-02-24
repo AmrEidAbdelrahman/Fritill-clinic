@@ -1,15 +1,20 @@
 from django.urls import path
-from .views import Home, AppointmentView, RescheduleRequestView
+from .views import Home, AppointmentView, RescheduleRequestView, reserve_appointment, reschedule_request
 
 app_name = 'api'
 urlpatterns = [
 		path('', Home, name='home-page'),
+		path('appointment/reserve/', reserve_appointment, name='reserve-appointment-page'),
+		path('appointment/reschedule-request/', reschedule_request, name='reschedule-requests-page'),
+		path('appointment/<pk>/reschedule-request/', reschedule_request, name='reschedule-request-page'),
+
+
 
 		path('appointments/', AppointmentView.as_view({'get':'list'}), name='appointment'),
 		path('appointments/upcoming/', AppointmentView.as_view({'get':'list'}), {"filter":"upcoming"}, name='appointment-upcoming'),
 		path('appointments/past/', AppointmentView.as_view({'get':'list'}), {"filter":"past"}, name='appointment-past'),
-		path('appointments/reserve/', AppointmentView.as_view({'post':'create'}), name='appointment-reserve'),
 		path('appointments/new/', AppointmentView.as_view({'get':'list'}), {"filter":"new"}, name='appointment-new'),
+		path('appointments/reserve/', AppointmentView.as_view({'post':'create'}), name='appointment-reserve'),
 
 		
 		# client and admin can cancel the appointment
