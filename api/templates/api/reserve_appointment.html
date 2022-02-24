@@ -18,19 +18,18 @@
     {% endblock %}
   	{% block content %}
   	<div class="container">
-  		<h1>Appointment Reserve</h1>
+  		<h1 class="mb-5 mt-5">Appointment Reserve</h1>
 	    <form class="f">
 	    	{% csrf_token%}
-			<div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-			{{ form }}		
-			<div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-			<br>
-			<button type="submit" class="btn btn-primary mt-3">Reserve</button>
+  			<div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+    			{{ form }}		
+    			<div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+    			</div>
+        </div>
+      <button type="submit" class="btn btn-primary mt-3">Reserve</button>
 	    </form>
-	        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-	      </div>
-	    </div>
-  	</div>
+    </div>
     {% endblock %}
 
     {% block js %}

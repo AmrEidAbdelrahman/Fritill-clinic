@@ -63,11 +63,14 @@
 		    <a href="#" class="btn btn-danger">Cancel</a>
 		    {% endif %}
 		    {% if not user.is_staff %}
-		    <a href="{% url 'frontend:reserve-appointment-page' appointment.id%}" class="btn btn-danger">Reschedule</a>
+		    <a href="{% url 'frontend:reschedule-request-page' appointment.id %}" class="btn btn-dark">Reschedule</a>
 		    {% endif %}
 		  </div>
 		</div>
 
+		{% empty %}
+		<p>You Have No Upcoming Appointment</p>
+		<a href="{% url 'reserve-appointment-page' %}">Reserve Now</a>
 		{% endfor %}	
 		{% endif %}
 
@@ -100,7 +103,8 @@
 		    {% endif %}
 		  </div>
 		</div>
-
+		{% empty %}
+		<p>You Have No Past Appointment</p>
 		{% endfor %}	
 		{% endif %}
 
@@ -115,14 +119,14 @@
 		  <div class="card-body">
 		    <h5 class="card-title">Date: {{appointment.date}}</h5>
 		    <p class="card-text">Status: 
-		    {% if appointment.approved %}
-		    Approved
-		    {% elif appointment.cancel %}
-		    cancel
-		    {% elif appointment.finished %}
-		    finished
+		    {% if appointment.finished %}
+		    Finished
 		    {% elif appointment.missed %}
 		    missed
+		    {% elif appointment.approved %}
+		    approved
+		    {% elif appointment.cancel %}
+		    cancel
 		    {% else %}
 		    new
 		    {% endif %}
@@ -131,6 +135,9 @@
 		  </div>
 		</div>
 
+		{% empty %}
+		<p>You Have No Appointment</p>
+		<a href="{% url 'reserve-appointment-page' %}">Reserve Now</a>
 		{% endfor %}	
 		{% endif %}
 
@@ -164,7 +171,8 @@
 
 		  </div>
 		</div>
-
+		{% empty %}
+		<p>You Have No New Appointment</p>
 		{% endfor %}	
 		{% endif %}
 		

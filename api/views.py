@@ -29,15 +29,16 @@ class AppointmentView(ModelViewSet):
     """
     
     serializer_class = AppointmentSerializer
-    #permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         filter =  self.kwargs.get('filter')
         user = self.request.user
         queryset = Appointment.objects.all()
-        if user.is_staff:
+        if not user.is_staff:
             print('#$#$#$#$', user)
-            queryset.filter(client=user)
+            queryset = queryset.filter(client=user)
+            print(queryset)
         if filter == "upcoming":
             return queryset.filter(approved=True, date__gt=datetime.now()).order_by('date')
         elif filter == "past":
@@ -96,9 +97,18 @@ class RescheduleRequestView(ModelViewSet):
     """
     API endpoint to handle reschedule requests.
     """
-    queryset = RescheduleRequest.objects.all().order_by('to')
+    #queryset = RescheduleRequest.objects.all().order_by('to')
     serializer_class = RescheduleRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = RescheduleRequest.objects.all().order_by('to')
+        if not user.is_staff:
+            print('#$#$#$#$', user)
+            queryset = queryset.filter(appointment__client=user)
+            print(queryset)
+        return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -130,8 +140,13 @@ class RescheduleRequestView(ModelViewSet):
         return Response(status=200)
 
 
-def reschedule_request(request):
+def reschedule_request(request, pk):
     if request.method == 'GET':
         form = RescheduleRequestForm()
+        appointment = Appointment.objects.get(pk=pk)
+        context = {
+            'form':form,
+            'appointment': appointment
 
-    return render(request, 'api/reschedule_requests.html', {'form': form})
+        }
+    return render(request, 'api/reschedule_requests.html', context)

@@ -30,12 +30,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'crispy_forms',
+    
+    'api',
 
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     
-    'api',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -50,9 +51,13 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'api.models.CsrfExemptSessionAuthentication',
-        'api.models.BearerAuthentication'
+        #'rest_framework.authentication.BasicAuthentication',
+        #'api.models.CsrfExemptSessionAuthentication',
+        #'api.models.BearerAuthentication'
+
+        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication', 
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
