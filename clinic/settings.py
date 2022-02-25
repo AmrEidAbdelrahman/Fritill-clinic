@@ -53,11 +53,11 @@ REST_FRAMEWORK = {
         #'rest_framework_simplejwt.authentication.JWTAuthentication',
         #'rest_framework.authentication.BasicAuthentication',
         #'api.models.CsrfExemptSessionAuthentication',
-        #'api.models.BearerAuthentication'
+        'api.models.BearerAuthentication',
 
         #'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication', 
+        #'rest_framework.authentication.TokenAuthentication', 
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',

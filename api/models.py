@@ -15,7 +15,7 @@ class Appointment(models.Model):
 	cancel = models.BooleanField(default=False)
 
 	def __str__(self):
-		return f'{self.client.username}'
+		return f'{self.client.username} - {self.id}'
 
 
 class RescheduleRequest(models.Model):
@@ -24,6 +24,8 @@ class RescheduleRequest(models.Model):
 	approved = models.BooleanField(default=False)
 	refused = models.BooleanField(default=False)
 	create_time = models.DateTimeField(auto_now_add=True)
+
+
 
 
 class BearerAuthentication(TokenAuthentication):

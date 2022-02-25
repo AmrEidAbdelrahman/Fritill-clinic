@@ -66,6 +66,17 @@ class AppointmentView(ModelViewSet):
         }
         return render(request, 'api/appointment.html', context)
 
+    def create(self, request, *args, **kwargs):
+        print("#######")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        if self.kwargs.get('api') == True:
+            print("%$%$%$%$%$%")
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return render(request, 'api/home.html')
+
     # for clients and admins
     @action(detail=True, methods=['put'], name="appointment-cancel")
     def cancel(self, request, pk=None):
@@ -103,7 +114,7 @@ class RescheduleRequestView(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = RescheduleRequest.objects.all().order_by('to')
+        queryset = RescheduleRequest.objects.all().filter(approved=False, refused=False).order_by('to')
         if not user.is_staff:
             print('#$#$#$#$', user)
             queryset = queryset.filter(appointment__client=user)
@@ -127,10 +138,19 @@ class RescheduleRequestView(ModelViewSet):
         }
         return render(request, 'api/reschedule_requests.html', context)
 
+    
+
     @action(detail=True, methods=['put'], name="reschedule-approve")
     def approve(self, request, pk=None):
-        req = RescheduleRequest.objects.filter(pk=pk).update(approved=True, refused=False)
+        req = RescheduleRequest.objects.filter(pk=pk)[0]
+        req.approved=True
+        req.refused=False
+        req.save()
         # TODO: change the appointment date
+        appointment = req.appointment
+        appointment.date = req.to
+        appointment.save()
+        print(appointment)
         return Response(status=200)
 
 

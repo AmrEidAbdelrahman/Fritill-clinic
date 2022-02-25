@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io
 
 NOTES.txt
+error.html
 
 ### OSX ###
 .DS_Store

@@ -25,14 +25,14 @@
 
 	{% for request in response %}
 
-	<div class="card">
+	<div class="card mb-5">
 	  <div class="card-header">
 	    Client: {{request.appointment.client.username}}
 	  </div>
 	  <div class="card-body">
 	    <h5 class="card-title">Old Date: {{request.appointment.date}}</h5>
 	    <h5 class="card-title">New Date: {{ request.to}}</h5>
-	    <p class="card-text">Status: 
+	    <p class="card-text">appointment Status: 
 	    {% if request.appointment.approved %}
 	    Approved
 	    {% elif request.appointment.cancel %}
@@ -45,31 +45,37 @@
 	    new
 	    {% endif %}
 		</p>
-	    {% if not appointment.cancel and not appointment.approved %}
-	    <a href="#" class="btn btn-primary">approve</a>
-	    <a href="#" class="btn btn-danger">cancel</a>
+	    {% if not appointment.cancel and not appointment.approved and user.is_staff %}
+	    <a href="javascript:void(0);" class="btn btn-primary" onclick="approve({{request.id}})">approve</a>
+	    <a href="javascript:void(0);" class="btn btn-danger" onclick="cancel({{request.id}})">cancel</a>
 	    {% endif %}
 
 	  </div>
 	</div>
 
 	{% empty %}
+	{% if not form %}
 	<p>You Have No Requests</p>
+	{% endif %}
 	{% endfor %}
 	
 	{% if form %}
 	<div class="container">
 		
 		<div class="row">
-	  		<form class="f">
+	  		<form method="POST" action="{% url 'frontend:reschedule-request' %}">
 		    	{% csrf_token%}
+	  			<input type="number" name="appointment" value="{{appointment.id}}" hidden >
+	    		{{ form }}		
+	    		<span>use this format: YYYY-MM-DD Thh:mm</span>
+	    		<!--
 	  			<div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-	    			{{ form }}		
 	    			<div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
 	            		<div class="input-group-text"><i class="fa fa-calendar"></i></div>
 	    			</div>
-		        </div>
-		      	<button type="submit" class="btn btn-primary mt-3 float-end">Reschedule</button>
+		      </div>
+	    		-->
+		      <button type="submit" class="btn btn-primary mt-3 float-end">Reschedule</button>
 		    </form>
   		</div>
   		<div class="row mt-5">
@@ -104,8 +110,59 @@
 <script>
   $(function () {
     $("#datetimepicker1").datetimepicker({
-      format: 'DD/MM/YYYY HH:mm',
+      format: 'YYYY-MM-DD HH:mm',
     });
   });
+</script>
+
+<script type="text/javascript">
+		function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = jQuery.trim(cookies[i]);
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+
+		function csrfSafeMethod(method) {
+		    // these HTTP methods do not require CSRF protection
+		    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		$.ajaxSetup({
+		    beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		    }
+		});
+
+
+
+		function approve(pk){
+			console.log("#####approve#####")
+			console.log(pk)
+			url = "{% url 'api:reschedule-request-approve' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
 </script>
 {% endblock %}

@@ -13,8 +13,9 @@
 {% endblock %}
 {% block content %}
 	<div class="container mt-5">
-		{{ user }}
-	<a href="{% url 'frontend:reserve-appointment-page' %}" class="btn btn-primary float-end mt-5">Reserve Appointment</a>
+		{% if not user.is_staff %}
+		<a href="{% url 'frontend:reserve-appointment-page' %}" class="btn btn-primary float-end mt-5">Reserve Appointment</a>
+		{% endif %}
 		<ul class="nav">
 		  <li class="nav-item">
 		    <a class="nav-link active" aria-current="page" href="{% url 'frontend:appointment' %}">All</a>
@@ -57,10 +58,10 @@
 		    {% endif %}
 			</p>
 		    {% if user.is_staff and not appointment.approved and not appointment.cancel %}
-		    <a href="#" class="btn btn-primary">Approve</a>
-		    <a href="#" class="btn btn-danger">Cancel</a>
+		    <a href="javascript:void(0);" class="btn btn-primary" onclick="approve({{appointment.id}})">Approve</a>
+		    <a href="javascript:void(0);" class="btn btn-danger" onclick="cancel({{appointment.id}})">Cancel</a>
 		    {% elif not appointment.cancel %}
-		    <a href="#" class="btn btn-danger">Cancel</a>
+		    <a href="javascript:void(0);" class="btn btn-danger" onclick="cancel({{appointment.id}})">Cancel</a>
 		    {% endif %}
 		    {% if not user.is_staff %}
 		    <a href="{% url 'frontend:reschedule-request-page' appointment.id %}" class="btn btn-dark">Reschedule</a>
@@ -70,7 +71,7 @@
 
 		{% empty %}
 		<p>You Have No Upcoming Appointment</p>
-		<a href="{% url 'reserve-appointment-page' %}">Reserve Now</a>
+		<a href="{% url 'frontend:reserve-appointment-page' %}">Reserve Now</a>
 		{% endfor %}	
 		{% endif %}
 
@@ -98,8 +99,8 @@
 		    {% endif %}
 			</p>
 			{% if not appointment.finished and not appointment.missed %}
-		    <a href="#" class="btn btn-primary">Missed</a>
-		    <a href="#" class="btn btn-primary">Finished</a>
+		    <a href="javascript:void(0);" class="btn btn-primary" onclick="miss({{appointment.id}})">Missed</a>
+		    <a href="javascript:void(0);" class="btn btn-primary" onclick="finish({{appointment.id}})">Finished</a>
 		    {% endif %}
 		  </div>
 		</div>
@@ -131,13 +132,13 @@
 		    new
 		    {% endif %}
 			</p>
-		    <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+		    <!--<a href="javascript:void(0);" class="btn btn-primary">Go somewhere</a>-->
 		  </div>
 		</div>
 
 		{% empty %}
 		<p>You Have No Appointment</p>
-		<a href="{% url 'reserve-appointment-page' %}">Reserve Now</a>
+		<a href="{% url 'frontend:reserve-appointment-page' %}">Reserve Now</a>
 		{% endfor %}	
 		{% endif %}
 
@@ -165,8 +166,8 @@
 		    {% endif %}
 			</p>
 		    {% if not appointment.cancel and not appointment.approved %}
-		    <a href="#" class="btn btn-primary">approve</a>
-		    <a href="#" class="btn btn-danger">cancel</a>
+		    <a href="javascript:void(0);" class="btn btn-primary" onclick="approve({{appointment.id}})">approve</a>
+		    <a href="javascript:void(0);" class="btn btn-danger" onclick="cancel({{appointment.id}})">cancel</a>
 		    {% endif %}
 
 		  </div>
@@ -175,5 +176,113 @@
 		<p>You Have No New Appointment</p>
 		{% endfor %}	
 		{% endif %}
-		
+	</div>		
+{% endblock %}
+
+{% block js %}
+	<script type="text/javascript">
+
+		function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = jQuery.trim(cookies[i]);
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+
+		function csrfSafeMethod(method) {
+		    // these HTTP methods do not require CSRF protection
+		    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		$.ajaxSetup({
+		    beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		    }
+		});
+
+
+		function approve(pk=0){
+			console.log(pk)
+			url = "{% url 'api:appointment-approve' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
+
+		function cancel(pk){
+			console.log("#####Cancel#####")
+			console.log(pk)
+			url = "{% url 'api:appointment-cancel' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
+
+
+		function miss(pk){
+			console.log("#####Missed#####")
+			console.log(pk)
+			url = "{% url 'api:appointment-missed' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
+
+
+		function finish(pk){
+			console.log("#####finish#####")
+			console.log(pk)
+			url = "{% url 'api:appointment-finished' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
+	</script>
 {% endblock %}

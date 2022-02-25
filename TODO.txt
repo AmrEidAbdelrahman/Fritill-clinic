@@ -1,0 +1,3 @@
+- edit the frontend after each ajax request
+- make the reserve new appointment and reschedule with ajax
+- handle the date of resevation and rescheduling to valid date
