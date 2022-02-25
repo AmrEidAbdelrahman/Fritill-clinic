@@ -29,6 +29,7 @@ class AppointmentView(ModelViewSet):
     """
     
     serializer_class = AppointmentSerializer
+    filterset_fields = ['client__username', 'date', 'approved', 'cancel', 'missed', 'finished']
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -138,7 +139,17 @@ class RescheduleRequestView(ModelViewSet):
         }
         return render(request, 'api/reschedule_requests.html', context)
 
-    
+    def create(self, request, *args, **kwargs):
+        print("#######")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        if self.kwargs.get('api') == True:
+            print("%$%$%$%$%$%")
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return render(request, 'api/home.html')
+
 
     @action(detail=True, methods=['put'], name="reschedule-approve")
     def approve(self, request, pk=None):

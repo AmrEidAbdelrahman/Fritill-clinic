@@ -14,7 +14,7 @@
 {% block content %}
 	<div class="container mt-5">
 		{% if not user.is_staff %}
-		<a href="{% url 'frontend:reserve-appointment-page' %}" class="btn btn-primary float-end mt-5">Reserve Appointment</a>
+		<a href="{% url 'frontend:reserve-appointment-page' %}" class="btn btn-primary float-end  align-text-bottom">Reserve Appointment</a>
 		{% endif %}
 		<ul class="nav">
 		  <li class="nav-item">
@@ -110,6 +110,18 @@
 		{% endif %}
 
 		{% if filter == None %}
+		<div class="container">
+			<div class="row">
+				<form method="GET">
+					<label>Date: <span>use this format: YYYY-MM-DD Thh:mm</span></label>
+					<input type="text" name="date">
+					<label>Client Username: </label>
+					<input type="text" name="client__username">
+					<button type="submit" class="btn btn-light">Search</button>
+				</form>
+			</div>
+		</div>
+		<br>
 		<h1>Appointments</h1>
 		{% for appointment in response %}
 

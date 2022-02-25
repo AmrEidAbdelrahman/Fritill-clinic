@@ -164,5 +164,22 @@
 			})
 
 		}
+		function cancel(pk){
+			console.log("#####approve#####")
+			console.log(pk)
+			url = "{% url 'api:reschedule-request-cancel' 986352147856935 %}".replace("986352147856935", pk)
+			$.ajax({
+			    "url": url,
+			    "headers":{'api-csrftoken':'{{ csrf_token }}'},
+			    "type": "PUT",
+			   "success": function(response){
+					console.log("#####Success#####")
+			   },
+			   "error": function(response){
+			   		console.log(response)
+			   }
+			})
+
+		}
 </script>
 {% endblock %}

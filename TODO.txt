@@ -1,3 +1,4 @@
 - edit the frontend after each ajax request
 - make the reserve new appointment and reschedule with ajax
 - handle the date of resevation and rescheduling to valid date
+- to filter based on the appointment status -> must change the way of saving the status
